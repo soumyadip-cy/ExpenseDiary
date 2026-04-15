@@ -1,6 +1,7 @@
 package org.soumyadip.expensediary.config;
 
 import lombok.RequiredArgsConstructor;
+import org.soumyadip.expensediary.filter.JwtAuthFilter;
 import org.soumyadip.expensediary.filter.UserContextLoggingFilter;
 import org.soumyadip.expensediary.service.ImplementedUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -24,17 +25,20 @@ public class SecurityConfig{
 
     private final ImplementedUserDetailsService implementedUserDetailsService;
     private final UserContextLoggingFilter userContextLoggingFilter;
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
 
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/api/v1/health/*").permitAll()
+                                .requestMatchers("/api/v1/auth/**", "/error").permitAll()
                                 .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider)
                 .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(userContextLoggingFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -47,10 +51,15 @@ public class SecurityConfig{
 
     //Spring Security 7 has made the use of AuthenticationManager during Authenticat
     @Bean
-    public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder){
+    public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(implementedUserDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         return daoAuthenticationProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationProvider authenticationProvider) {
+        return new ProviderManager(authenticationProvider);
     }
 
 }
