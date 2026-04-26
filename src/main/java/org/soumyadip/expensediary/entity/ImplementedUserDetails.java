@@ -1,24 +1,23 @@
 package org.soumyadip.expensediary.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 @AllArgsConstructor
 public class ImplementedUserDetails implements UserDetails {
 
     private String username;
     private String password;
-    private Collection<? extends GrantedAuthority> roles;
+    private Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return authorities;
     }
 
     @Override

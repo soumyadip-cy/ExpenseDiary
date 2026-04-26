@@ -39,3 +39,4 @@ out/
 ### ExpenseDiary ###
 src/main/resources/application.properties.old
 src/main/resources/application.yml
+gradle.properties

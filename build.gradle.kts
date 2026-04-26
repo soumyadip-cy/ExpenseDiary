@@ -1,8 +1,24 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.flywaydb:flyway-database-postgresql:11.15.0")
+    }
+}
+
 plugins {
     java
     id("org.springframework.boot") version "4.0.5"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.asciidoctor.jvm.convert") version "4.0.5"
+    id("org.flywaydb.flyway") version "11.15.0"
+}
+
+flyway {
+    url = property("dbUrl") as String
+    user = property("dbUser") as String
+    password = property("dbPassword") as String
 }
 
 group = "org.soumyadip"

@@ -31,15 +31,15 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth ->
-                        auth
-                                .requestMatchers("/api/v1/auth/**", "/error").permitAll()
-                                .anyRequest().authenticated())
-                .authenticationProvider(authenticationProvider)
-                .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(userContextLoggingFilter, UsernamePasswordAuthenticationFilter.class);
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth ->
+                auth
+                    .requestMatchers("/api/v1/auth/**", "/error").permitAll()
+                    .anyRequest().authenticated())
+            .authenticationProvider(authenticationProvider)
+            .httpBasic(Customizer.withDefaults())
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(userContextLoggingFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -1,6 +1,8 @@
 package org.soumyadip.expensediary.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record AuthRequest(
-    String username,
-    String password
+    @NotBlank String username,
+    @NotBlank String password
 ) {}
