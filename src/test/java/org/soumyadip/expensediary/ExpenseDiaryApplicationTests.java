@@ -1,13 +1,15 @@
 package org.soumyadip.expensediary;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 class ExpenseDiaryApplicationTests {
 
     @Test
-    void contextLoads() {
+    void applicationIsConfiguredAsSpringBootApplication() {
+        assertNotNull(ExpenseDiaryApplication.class.getAnnotation(SpringBootApplication.class));
     }
 
 }

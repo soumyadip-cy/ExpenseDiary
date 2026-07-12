@@ -33,23 +33,74 @@ public class UserInitializerService {
             user = new User(
                     ulid.generate(),
                     "admin",
-                    passwordEncoder.encode("@dmin$99")
+                    passwordEncoder.encode("@dmin$99"),
+                    true,
+                    null
             );
             userRepository.save(user);
             log.info("Default user created");
         } else
             user = userRepository.findByUsername("admin").orElse(null);
 
-        if(roleRepository.findByName("ADMIN").isEmpty()) {
+        user.setUserIsActive(true);
+
+        if(roleRepository.findByNameIgnoreCase("SUPERADMIN").isEmpty()) {
 
             role = new Role(
                     ulid.generate(),
-                    "ADMIN"
+                    "SUPERADMIN",
+                    true
             );
             roleRepository.save(role);
-            log.info("ADMIN role created");
+            log.info("SUPERADMIN role created");
         } else
-            role = roleRepository.findByName("ADMIN").orElse(null);
+            role = roleRepository.findByNameIgnoreCase("SUPERADMIN").orElse(null);
+
+        role.setRoleIsActive(true);
+
+        if(userRoleRepository.findByUserAndRole(user, role).isEmpty()) {
+
+            userRole = new UserRole(
+                    ulid.generate(),
+                    user,
+                    role
+            );
+            userRoleRepository.save(userRole);
+            log.info("Role assigned to default user");
+        } else
+            userRole = userRoleRepository.findByUserAndRole(user, role).orElse(null);
+    }
+
+    @Transactional
+    public void CreateInitialUser() {
+        User user;
+        Role role;
+        UserRole userRole;
+
+        if(userRepository.findByUsername("visitor").isEmpty()) {
+            user = new User(
+                    ulid.generate(),
+                    "visitor",
+                    passwordEncoder.encode("@visitor$99"),
+                    true,
+                    null
+            );
+            userRepository.save(user);
+            log.info("Default visitor created");
+        } else
+            user = userRepository.findByUsername("visitor").orElse(null);
+
+        if(roleRepository.findByNameIgnoreCase("VISITOR").isEmpty()) {
+            role = new Role(
+                    ulid.generate(),
+                    "VISITOR",
+                    true
+            );
+
+            roleRepository.save(role);
+            log.info("VISITOR role created");
+        } else
+            role = roleRepository.findByNameIgnoreCase("VISITOR").orElse(null);
 
         if(userRoleRepository.findByUserAndRole(user, role).isEmpty()) {
 

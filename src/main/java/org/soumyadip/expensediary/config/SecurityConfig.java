@@ -13,6 +13,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,12 +34,15 @@ public class SecurityConfig{
 
         http
             .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
             .authorizeHttpRequests(auth ->
                 auth
                     .requestMatchers("/api/v1/auth/**", "/error").permitAll()
                     .anyRequest().authenticated())
             .authenticationProvider(authenticationProvider)
-            .httpBasic(Customizer.withDefaults())
+            .httpBasic(AbstractHttpConfigurer::disable)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(userContextLoggingFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -49,7 +54,7 @@ public class SecurityConfig{
         return new BCryptPasswordEncoder();
     }
 
-    //Spring Security 7 has made the use of AuthenticationManager during Authenticat
+    // Spring Security 7 recommends bean-based AuthenticationManager configuration
     @Bean
     public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(implementedUserDetailsService);

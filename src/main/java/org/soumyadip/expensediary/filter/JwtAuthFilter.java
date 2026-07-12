@@ -7,7 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.soumyadip.expensediary.service.ExpiredAccessTokenService;
+import org.soumyadip.expensediary.service.ImplementedUserDetailsService;
 import org.soumyadip.expensediary.util.JWTutil;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +27,8 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JWTutil jwtutil;
-    private final UserDetailsService userDetailsService;
+    private final ImplementedUserDetailsService userDetailsService;
+    private final ExpiredAccessTokenService expiredAccessTokenService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -44,16 +48,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if(jwtutil.validateToken(username, userDetails, rawToken)) {
+            if(jwtutil.validateToken(username, userDetails, rawToken) && !expiredAccessTokenService.isExpired(rawToken)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 //Direct instantiation is discouraged as it skips Spring's abstraction
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                log.info("Authentication Successful");
+                log.info("Authentication Successful!");
+            } else  {
+                SecurityContextHolder.getContext().setAuthentication(null);
+                log.info("Authentication Failed!");
             }
         }
 
         filterChain.doFilter(request, response);
-        log.info("Authentication Successful");
     }
 }

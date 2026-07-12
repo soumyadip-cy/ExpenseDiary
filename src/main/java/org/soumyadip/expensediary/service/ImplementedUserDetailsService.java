@@ -1,8 +1,7 @@
 package org.soumyadip.expensediary.service;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.soumyadip.expensediary.entity.ImplementedUserDetails;
 import org.soumyadip.expensediary.entity.Role;
@@ -20,7 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ImplementedUserDetailsService implements UserDetailsService {
@@ -36,16 +38,18 @@ public class ImplementedUserDetailsService implements UserDetailsService {
         User plainUser = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username+" not found."));
         HashSet<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
-        for(UserRole userRole : userRoleRepository.findAllByUser(plainUser)) {
+        Set<Role> roles = userRoleRepository.findAllRolesByUser(plainUser);
+        if(!roles.isEmpty()){
 
-            Role role = roleRepository
-                    .findById(userRole.getRole().getId())
-                    .orElseThrow(() -> new RuntimeException(username+" has no role."));
+            for(Role role : roles) {
 
-            grantedAuthorities.add(new SimpleGrantedAuthority(
-                        role.getName()
-                    ));
+                grantedAuthorities.add(new SimpleGrantedAuthority(
+                            role.getName()
+                        ));
+            }
         }
+
+        log.info("User {} has roles {}",plainUser,grantedAuthorities);
 
         return new ImplementedUserDetails(username, plainUser.getPassword(), grantedAuthorities);
     }

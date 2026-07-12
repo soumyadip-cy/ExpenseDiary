@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,4 +24,10 @@ public class User {
 
     @Column(nullable = false, name = "password")
     private String password;
+
+    @Column(nullable = false, name = "user_is_active")
+    private boolean userIsActive;
+
+    @Column(name = "password_changed_at")
+    private Instant passwordChangedAt;
 }

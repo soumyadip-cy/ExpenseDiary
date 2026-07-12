@@ -72,8 +72,20 @@ public class RefreshTokenService {
 
         refreshTokenRepository.delete(oldToken);
 
-        log.debug("Rotated refresh token");
+        log.debug("Deleted refresh token. Rotation in progress.");
 
         return createRefreshToken(oldToken.getUser());
+    }
+
+    @Transactional
+    public boolean deleteRefreshToken(String refreshToken) throws InvalidRefreshTokenException, RefreshTokenExpiredException {
+
+        RefreshToken oldToken = validateRefreshToken(refreshToken);
+
+        refreshTokenRepository.delete(oldToken);
+
+        log.debug("Deleted refresh token");
+
+        return true;
     }
 }

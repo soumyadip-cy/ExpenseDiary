@@ -16,5 +16,7 @@ public class AddInitialUser implements CommandLineRunner {
     public void run(String... args) throws Exception {
         userInitializerService.CreateInitialAdmin();
         log.info("User initialized");
+        userInitializerService.CreateInitialUser();
+        log.info("Visitor user initialized");
     }
 }

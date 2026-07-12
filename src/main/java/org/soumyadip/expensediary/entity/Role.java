@@ -19,4 +19,7 @@ public class Role {
 
     @Column(nullable = false, name = "name")
     private String name;
+
+    @Column(nullable = false, name = "role_is_active")
+    private boolean roleIsActive;
 }
