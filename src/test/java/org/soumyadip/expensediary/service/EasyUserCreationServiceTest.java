@@ -23,7 +23,7 @@ class EasyUserCreationServiceTest {
     @Test
     void regularUserUsesExistingUserRole() {
         Role userRole = new Role("role-id", "USER", true);
-        when(roleRepository.findByName("USER")).thenReturn(Optional.of(userRole));
+        when(roleRepository.findByNameIgnoreCase("USER")).thenReturn(Optional.of(userRole));
 
         service.createRegularUser("sam", "password");
 
@@ -36,7 +36,7 @@ class EasyUserCreationServiceTest {
     @Test
     void adminUserCreatesMissingAdminRole() {
         Role adminRole = new Role("role-id", "ADMIN", true);
-        when(roleRepository.findByName("ADMIN")).thenReturn(Optional.empty());
+        when(roleRepository.findByNameIgnoreCase("ADMIN")).thenReturn(Optional.empty());
         when(roleService.createRole("ADMIN")).thenReturn(adminRole);
 
         service.createAdminUser("admin", "password");

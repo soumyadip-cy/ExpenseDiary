@@ -29,7 +29,7 @@ class RoleServiceTest {
     @Test
     void createRoleReturnsExistingRoleWithoutSaving() {
         Role role = new Role("id", "USER", true);
-        when(roleRepository.findByName("USER")).thenReturn(Optional.of(role));
+        when(roleRepository.findByNameIgnoreCase("USER")).thenReturn(Optional.of(role));
 
         assertSame(role, service.createRole("USER"));
         verify(roleRepository, never()).save(any());
@@ -37,7 +37,7 @@ class RoleServiceTest {
 
     @Test
     void createRoleGeneratesAndSavesMissingRole() {
-        when(roleRepository.findByName("USER")).thenReturn(Optional.empty());
+        when(roleRepository.findByNameIgnoreCase("USER")).thenReturn(Optional.empty());
         when(ulid.generate()).thenReturn("role-id");
 
         Role result = service.createRole("USER");

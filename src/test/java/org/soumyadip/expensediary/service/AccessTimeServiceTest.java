@@ -42,7 +42,7 @@ class AccessTimeServiceTest {
         AccessTime previous = new AccessTime("old", user, AccessTimeType.LOGIN, Instant.parse("2026-01-01T00:00:00Z"));
         when(repository.findFirstByUserOrderByTimestampDesc(user)).thenReturn(Optional.of(previous));
         when(ulidGenerator.generate()).thenReturn("logout", "login");
-        when(jwtutil.getExpirationTime()).thenReturn(1000L);
+        when(jwtutil.getDefaultExpirationTime()).thenReturn(1000L);
 
         service.storeAccessTime(user, AccessTimeType.LOGIN);
 

@@ -29,7 +29,7 @@ class UserInitializerServiceTest {
     @Test
     void createsInitialAdminAndAssignsAdminRoleWhenMissing() {
         when(userRepository.findByUsername("admin")).thenReturn(Optional.empty());
-        when(roleRepository.findByName("ADMIN")).thenReturn(Optional.empty());
+        when(roleRepository.findByNameIgnoreCase("ADMIN")).thenReturn(Optional.empty());
         when(userRoleRepository.findByUserAndRole(any(), any())).thenReturn(Optional.empty());
         when(ulid.generate()).thenReturn("user-id", "role-id", "assignment-id");
         when(passwordEncoder.encode(any())).thenReturn("encoded");

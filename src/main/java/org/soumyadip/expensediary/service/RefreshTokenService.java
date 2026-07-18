@@ -7,8 +7,6 @@ import org.soumyadip.expensediary.entity.User;
 import org.soumyadip.expensediary.exception.InvalidRefreshTokenException;
 import org.soumyadip.expensediary.exception.RefreshTokenExpiredException;
 import org.soumyadip.expensediary.repository.RefreshTokenRepository;
-import org.soumyadip.expensediary.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +20,6 @@ import java.util.Base64;
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
     private final UlidGenerator ulid;
 
     private String generateToken() {

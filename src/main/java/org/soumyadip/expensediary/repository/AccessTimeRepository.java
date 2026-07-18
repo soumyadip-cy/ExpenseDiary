@@ -1,6 +1,5 @@
 package org.soumyadip.expensediary.repository;
 
-import org.soumyadip.expensediary.dto.AccessTimes;
 import org.soumyadip.expensediary.entity.AccessTime;
 import org.soumyadip.expensediary.entity.User;
 import org.springframework.data.domain.Page;
