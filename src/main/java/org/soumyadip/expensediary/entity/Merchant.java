@@ -14,7 +14,6 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Entity
 @Table(name = "merchants")
 public class Merchant {
@@ -40,7 +39,7 @@ public class Merchant {
 
     @NotNull
     @Column(nullable = false, name = "merchant_is_active")
-    private boolean isActive;
+    private boolean active;
 
     @NotNull
     @Column(nullable = false)

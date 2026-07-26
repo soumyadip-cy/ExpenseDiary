@@ -2,11 +2,22 @@ package org.soumyadip.expensediary.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.soumyadip.expensediary.dto.ApiMessage;
+import org.soumyadip.expensediary.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
@@ -99,8 +110,101 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("JWT claim ID during logout error!");
     }
 
+    @ExceptionHandler(TransactionTypeNotFoundException.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleTransactionTypeNotFoundException(
+            TransactionTypeNotFoundException e
+    ) {
+        log.error("TransactionType with {} not found! | Error message: {}", e.getId(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ApiResponse<>(
+                        false,
+                    new ApiMessage("Transaction Type not found!"),
+                    HttpStatus.NOT_FOUND.value(),
+                    Instant.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<String> handleTransactionNotFoundException(
+            TransactionNotFoundException e
+    ) {
+        log.error("Transaction not found! | Error message: "+e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transaction not found!");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<LinkedHashMap<String, LinkedList<String>>>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException e
+    ) {
+
+
+        LinkedHashMap<String, LinkedList<String>> errors = e.getBindingResult().
+                getFieldErrors()
+                .stream()
+                .collect(Collectors.groupingBy(
+                        FieldError::getField,
+                        LinkedHashMap::new,
+                        Collectors.mapping(
+                                FieldError::getDefaultMessage,
+                                Collectors.toCollection(LinkedList::new)
+                        )
+                ));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ApiResponse<>(
+                        false,
+                        errors,
+                        HttpStatus.BAD_REQUEST.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException e,
+            HttpServletRequest request
+    ) {
+        String supportedMethods = e.getSupportedMethods() == null ? "null" : e.getSupportedMethods().toString();
+        log.error(
+                "Method not supported! | Error message: {} | Method: {} | Path: {} | SupportedMethods: {}",
+                e.getMessage(),
+                request.getMethod(),
+                request.getRequestURI(),
+                supportedMethods);
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ApiResponse<>(
+                false,
+                new ApiMessage(
+                        String.format("HTTP method '%s' is not supported for '%s'",
+                                request.getMethod(),
+                                request.getRequestURI())
+                ),
+                HttpStatus.METHOD_NOT_ALLOWED.value(),
+                Instant.now()
+        ));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleAccessDeniedException(
+            AccessDeniedException e,
+            HttpServletRequest request
+    ) {
+        log.error("User tried accessing endpoint without sufficient privileges ! | Error message: {}",e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ApiResponse<>(
+                        false,
+                        new ApiMessage("This user is not permitted to perform this operation!"),
+                        HttpStatus.FORBIDDEN.value(),
+                        Instant.now()
+                )
+        );
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(
+    public ResponseEntity<ApiResponse<ApiMessage>> handleException(
             Exception e,
             HttpServletRequest request
     ){
@@ -109,7 +213,14 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error!");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new  ApiResponse<>(
+                        false,
+                        new ApiMessage("Uncaught exception encountered! Please contact admin!"),
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        Instant.now()
+                )
+        );
     }
 
 }

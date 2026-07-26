@@ -31,8 +31,10 @@ CREATE TABLE merchants (
 CREATE TABLE transaction_types (
     id VARCHAR(32) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    description VARCHAR(1000)
-)
+    description VARCHAR(1000),
+
+    CONSTRAINT pk_transaction_types PRIMARY KEY (id)
+);
 
 CREATE TABLE transactions (
     id VARCHAR(32) NOT NULL,
@@ -43,21 +45,21 @@ CREATE TABLE transactions (
     type VARCHAR(32) NOT NULL,
     title VARCHAR(100) NOT NULL,
     description VARCHAR(1000),
-    amount DOUBLE(15,2) NOT NULL,
+    amount NUMERIC(15,2) NOT NULL,
 
     CONSTRAINT pk_transactions PRIMARY KEY (id),
     CONSTRAINT fk_transactions_merchant
         FOREIGN KEY (merchant_id)
         REFERENCES merchants (id)
-        ON DELETE CASCADE,
+        ON DELETE RESTRICT,
     CONSTRAINT fk_transactions_beneficiary
         FOREIGN KEY (beneficiary_id)
         REFERENCES beneficiaries (id)
-        ON DELETE CASCADE,
+        ON DELETE RESTRICT,
     CONSTRAINT fk_transactions_type
         FOREIGN KEY (type)
         REFERENCES transaction_types (id)
-        ON DELETE CASCADE
+        ON DELETE RESTRICT
 );
 
 CREATE INDEX ix_transactions_merchants

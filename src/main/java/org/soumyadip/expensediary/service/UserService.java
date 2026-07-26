@@ -190,7 +190,7 @@ public class UserService {
                 accessTimeService
                         .getAccessTimeList(concreteUser, 0)
                         .stream().forEach(accessTime -> accessTimes
-                                .add(new AccessTimeDTO(accessTime.getType(), accessTime.getTimestamp())));
+                                .add(new AccessTimeDTO(accessTime.type(), accessTime.timestamp())));
 
                 log.info("Access times fetched successfully !");
                 return new AccessTimes(accessTimes);

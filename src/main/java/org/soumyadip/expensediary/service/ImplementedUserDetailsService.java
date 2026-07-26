@@ -44,7 +44,7 @@ public class ImplementedUserDetailsService implements UserDetailsService {
             for(Role role : roles) {
 
                 grantedAuthorities.add(new SimpleGrantedAuthority(
-                            role.getName()
+                            "ROLE_"+role.getName()
                         ));
             }
         }

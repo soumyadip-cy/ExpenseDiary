@@ -1,20 +1,17 @@
 package org.soumyadip.expensediary.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Entity
 @Table(name = "transactions")
 public class Transaction {
@@ -24,22 +21,25 @@ public class Transaction {
 
     @NotBlank
     @Column(nullable = false)
-    private Instant transactionDate;
+    private Instant transactionTime;
 
     @NotNull
     @Column(nullable = false)
-    private Instant creationDate;
+    private Instant creationTime;
 
     @NotNull
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type")
     private TransactionType transactionType;
 
     @NotNull
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "beneficiary_id")
     private Beneficiary beneficiary;
 
     @NotNull
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 
     @NotBlank
@@ -51,5 +51,5 @@ public class Transaction {
 
     @NotNull
     @Column(nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 }

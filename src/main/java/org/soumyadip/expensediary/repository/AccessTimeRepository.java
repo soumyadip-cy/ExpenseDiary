@@ -10,6 +10,6 @@ import java.util.Optional;
 
 public interface AccessTimeRepository extends JpaRepository<AccessTime, String> {
 
-    Page<AccessTime> findByUserOrderByTimestampDesc(User user, Pageable pageable);
+    Page<AccessTime> findByUser(User user, Pageable pageable);
     Optional<AccessTime> findFirstByUserOrderByTimestampDesc(User user);
 }

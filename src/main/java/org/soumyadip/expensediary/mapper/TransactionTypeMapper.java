@@ -20,7 +20,7 @@ public interface TransactionTypeMapper {
     TransactionType toEntity(CreateTransactionTypeRequest createTransactionTypeRequest);
     TransactionTypeResponse toResponse(TransactionType transactionType);
 
-    void updateEnity(
+    void updateEntity(
             UpdateTransactionTypeRequest request,
             @MappingTarget TransactionType transactionType
     );
