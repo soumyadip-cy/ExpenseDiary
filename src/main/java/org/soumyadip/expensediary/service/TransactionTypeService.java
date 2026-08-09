@@ -11,7 +11,6 @@ import org.soumyadip.expensediary.mapper.TransactionTypeMapper;
 import org.soumyadip.expensediary.repository.TransactionTypeRepository;
 import org.soumyadip.expensediary.util.PageableUtil;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ public class TransactionTypeService {
     private final TransactionTypeMapper mapper;
     private final PageableUtil pageableUtil;
 
-    private TransactionType getTransactionType(String id) {
+    public TransactionType getTransactionType(String id) {
         TransactionType transactionType = repository.findById(id).orElseThrow(() -> new TransactionTypeNotFoundException("TransactionType not found with id: " + id, id));
         log.debug("TransactionType found with id: {}", id);
         return transactionType;
@@ -48,7 +47,7 @@ public class TransactionTypeService {
 
     public Page<TransactionTypeResponse> findAll(int page, int pageSize) {
 
-        Page<TransactionTypeResponse> responsePage = repository.findAll(pageableUtil.createPageable(page,pageSize, "name")).map(mapper::toResponse);
+        Page<TransactionTypeResponse> responsePage = repository.findAll(pageableUtil.createPageable(page,pageSize, "name", TransactionType.class)).map(mapper::toResponse);
         log.info("Returning response page");
         return responsePage;
     }
@@ -61,10 +60,12 @@ public class TransactionTypeService {
     @Transactional
     public TransactionTypeResponse updateById(String id, UpdateTransactionTypeRequest updateRequest) {
 
-        mapper.updateEntity(updateRequest, getTransactionType(id));
+        TransactionType transactionType = getTransactionType(id);
+
+        mapper.updateEntity(updateRequest, transactionType);
         log.info("TransactionType updated with id: {}", id);
 
-        return mapper.toResponse(getTransactionType(id));
+        return mapper.toResponse(transactionType);
     }
 
     @Transactional

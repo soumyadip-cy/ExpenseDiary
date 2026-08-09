@@ -46,7 +46,7 @@ public class AccessTimeService {
 
         return accessTimeRepository.findByUser(
                 user,
-                pageableUtil.createPageable(pageNumber, pageSize, "timestamp")
+                pageableUtil.createPageable(pageNumber, pageSize, "timestamp", AccessTime.class)
         ).map(
                 obj -> new AccessTimeDTO(
                         obj.getType(),

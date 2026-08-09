@@ -3,11 +3,11 @@ package org.soumyadip.expensediary.exception;
 import lombok.Getter;
 
 @Getter
-public class TransactionNotFoundException extends RuntimeException {
+public class MerchantNotFoundException extends RuntimeException {
 
     String id;
 
-    public TransactionNotFoundException(String message, String id) {
+    public MerchantNotFoundException(String message, String id) {
         super(message);
         this.id = id;
     }
