@@ -45,7 +45,9 @@ public class BeneficiaryService {
         return beneficiaryResponse;
     }
 
-    public Page<BeneficiaryResponse> findAll(int page, int pageSize, String sortBy, boolean sortByDescendingOrder) {
+    public Page<BeneficiaryResponse> findAll(int page, int pageSize, String sortBy, String sort) {
+
+        boolean sortByDescendingOrder = sort.equalsIgnoreCase("desc");
 
         Page<BeneficiaryResponse> beneficiaryResponses = beneficiaryRepository.findAll(pageableUtil.createPageable(page, pageSize, sortBy, sortByDescendingOrder, Beneficiary.class))
                 .map(beneficiaryMapper::toResponse);

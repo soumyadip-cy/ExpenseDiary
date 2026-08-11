@@ -26,8 +26,8 @@ public class TransactionTypeController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<TransactionTypeResponse>>> getAll(
-            @RequestParam int pageNumber,
-            @RequestParam int pageSize
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
     ){
         Page<TransactionTypeResponse> transactionTypeResponsePage = transactionTypeService.findAll(pageNumber, pageSize);
         PageResponse<TransactionTypeResponse> pageResponsePage = pageResponseMapper.toPageResponse(transactionTypeResponsePage);
@@ -67,7 +67,7 @@ public class TransactionTypeController {
     ) {
         TransactionTypeResponse transactionTypeResponse = transactionTypeService.createTransactionType(createTransactionTypeRequest);
 
-        URI location = URI.create("/api/v1/transaction-type"+transactionTypeResponse.id());
+        URI location = URI.create("/api/v1/transaction-types"+transactionTypeResponse.id());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(location)

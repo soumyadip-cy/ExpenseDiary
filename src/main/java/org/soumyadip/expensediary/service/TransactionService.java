@@ -51,7 +51,9 @@ public class TransactionService {
         return transactionResponse;
     }
 
-    public Page<TransactionResponse> findAll(int page, int pageSize, String sortBy, boolean sortByDescendingOrder) {
+    public Page<TransactionResponse> findAll(int page, int pageSize, String sortBy, String sort) {
+
+        boolean sortByDescendingOrder = sort.equalsIgnoreCase("desc");
 
         Page<TransactionResponse> transactionResponses = transactionRepository.findAll(pageableUtil.createPageable(page, pageSize, sortBy, sortByDescendingOrder, Transaction.class))
                 .map(transactionMapper::toResponse);

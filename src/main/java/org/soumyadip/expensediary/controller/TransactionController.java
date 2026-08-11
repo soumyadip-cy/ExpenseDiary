@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.soumyadip.expensediary.dto.*;
 import org.soumyadip.expensediary.mapper.PageResponseMapper;
-import org.soumyadip.expensediary.service.BeneficiaryService;
+import org.soumyadip.expensediary.service.TransactionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,21 +18,21 @@ import java.time.Instant;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/beneficiaries")
-public class BeneficiaryController {
+@RequestMapping("/api/v1/transactions")
+public class TransactionController {
 
-    private final BeneficiaryService beneficiaryService;
+    private final TransactionService transactionService;
     private final PageResponseMapper pageResponseMapper;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<BeneficiaryResponse>>> getAll(
+    public ResponseEntity<ApiResponse<PageResponse<TransactionResponse>>> getAll(
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize,
-            @RequestParam(defaultValue = "name") String fieldName,
+            @RequestParam(defaultValue = "transactionTime") String fieldName,
             @RequestParam(defaultValue = "desc") String sort
     ){
-        Page<BeneficiaryResponse> beneficiaryResponses = beneficiaryService.findAll(pageNumber, pageSize, fieldName, sort);
-        PageResponse<BeneficiaryResponse> pageResponsePage = pageResponseMapper.toPageResponse(beneficiaryResponses);
+        Page<TransactionResponse> transactionResponses = transactionService.findAll(pageNumber, pageSize, fieldName, sort);
+        PageResponse<TransactionResponse> pageResponsePage = pageResponseMapper.toPageResponse(transactionResponses);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
@@ -44,16 +44,16 @@ public class BeneficiaryController {
         );
     }
 
-    @GetMapping("/{beneficiaryId}")
-    public ResponseEntity<ApiResponse<BeneficiaryResponse>> get(
-            @PathVariable String beneficiaryId
+    @GetMapping("/{transactionId}")
+    public ResponseEntity<ApiResponse<TransactionResponse>> get(
+            @PathVariable String transactionId
     ) {
-        BeneficiaryResponse beneficiaryResponse = beneficiaryService.findById(beneficiaryId);
+        TransactionResponse transactionResponse = transactionService.findById(transactionId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
                         true,
-                        beneficiaryResponse,
+                        transactionResponse,
                         HttpStatus.OK.value(),
                         Instant.now()
                 )
@@ -62,21 +62,21 @@ public class BeneficiaryController {
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<BeneficiaryResponse>> create(
+    public ResponseEntity<ApiResponse<TransactionResponse>> create(
             @RequestBody
             @Valid
-            CreateBeneficiaryRequest createBeneficiaryRequest
+            CreateTransactionRequest createTransactionRequest
     ) {
-        BeneficiaryResponse beneficiaryResponse = beneficiaryService.createBeneficiary(createBeneficiaryRequest);
+        TransactionResponse transactionResponse = transactionService.createTransaction(createTransactionRequest);
 
-        URI location = URI.create("/api/v1/beneficiaries"+beneficiaryResponse.id());
+        URI location = URI.create("/api/v1/transactions"+transactionResponse.id());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(location)
                 .body(
                         new ApiResponse<>(
                                 true,
-                                beneficiaryResponse,
+                                transactionResponse,
                                 HttpStatus.CREATED.value(),
                                 Instant.now()
                         )
@@ -84,19 +84,19 @@ public class BeneficiaryController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
-    @PatchMapping("/{beneficiaryId}")
-    public ResponseEntity<ApiResponse<BeneficiaryResponse>> update(
-            @PathVariable String beneficiaryId,
+    @PatchMapping("/{transactionId}")
+    public ResponseEntity<ApiResponse<TransactionResponse>> update(
+            @PathVariable String transactionId,
             @RequestBody
             @Valid
-            UpdateBeneficiaryRequest updateBeneficiaryRequest
+            UpdateTransactionRequest updateTransactionRequest
     ) {
-        BeneficiaryResponse beneficiaryResponse = beneficiaryService.updateBeneficiary(beneficiaryId, updateBeneficiaryRequest);
+        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionId, updateTransactionRequest);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
                         true,
-                        beneficiaryResponse,
+                        transactionResponse,
                         HttpStatus.OK.value(),
                         Instant.now()
                 )
@@ -104,15 +104,15 @@ public class BeneficiaryController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
-    @DeleteMapping("/{beneficiaryId}")
+    @DeleteMapping("/{transactionId}")
     public ResponseEntity<ApiResponse<ApiMessage>> delete(
-            @PathVariable String beneficiaryId
+            @PathVariable String transactionId
     ) {
-        beneficiaryService.deleteBeneficiary(beneficiaryId);
+        transactionService.deleteTransaction(transactionId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
                         true,
-                        new ApiMessage("Beneficiary with id: "+beneficiaryId+" has been deleted"),
+                        new ApiMessage("Transaction with id: "+transactionId+" has been deleted"),
                         HttpStatus.OK.value(),
                         Instant.now()
                 )

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.soumyadip.expensediary.dto.*;
 import org.soumyadip.expensediary.mapper.PageResponseMapper;
-import org.soumyadip.expensediary.service.BeneficiaryService;
+import org.soumyadip.expensediary.service.MerchantService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,21 +18,21 @@ import java.time.Instant;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/beneficiaries")
-public class BeneficiaryController {
+@RequestMapping("/api/v1/merchants")
+public class MerchantController {
 
-    private final BeneficiaryService beneficiaryService;
+    private final MerchantService merchantService;
     private final PageResponseMapper pageResponseMapper;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<BeneficiaryResponse>>> getAll(
+    public ResponseEntity<ApiResponse<PageResponse<MerchantResponse>>> getAll(
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize,
             @RequestParam(defaultValue = "name") String fieldName,
             @RequestParam(defaultValue = "desc") String sort
     ){
-        Page<BeneficiaryResponse> beneficiaryResponses = beneficiaryService.findAll(pageNumber, pageSize, fieldName, sort);
-        PageResponse<BeneficiaryResponse> pageResponsePage = pageResponseMapper.toPageResponse(beneficiaryResponses);
+        Page<MerchantResponse> merchantResponses = merchantService.findAll(pageNumber, pageSize, fieldName, sort);
+        PageResponse<MerchantResponse> pageResponsePage = pageResponseMapper.toPageResponse(merchantResponses);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
@@ -44,16 +44,16 @@ public class BeneficiaryController {
         );
     }
 
-    @GetMapping("/{beneficiaryId}")
-    public ResponseEntity<ApiResponse<BeneficiaryResponse>> get(
-            @PathVariable String beneficiaryId
+    @GetMapping("/{merchantId}")
+    public ResponseEntity<ApiResponse<MerchantResponse>> get(
+            @PathVariable String merchantId
     ) {
-        BeneficiaryResponse beneficiaryResponse = beneficiaryService.findById(beneficiaryId);
+        MerchantResponse merchantResponse = merchantService.findById(merchantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
                         true,
-                        beneficiaryResponse,
+                        merchantResponse,
                         HttpStatus.OK.value(),
                         Instant.now()
                 )
@@ -62,21 +62,21 @@ public class BeneficiaryController {
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<BeneficiaryResponse>> create(
+    public ResponseEntity<ApiResponse<MerchantResponse>> create(
             @RequestBody
             @Valid
-            CreateBeneficiaryRequest createBeneficiaryRequest
+            CreateMerchantRequest createMerchantRequest
     ) {
-        BeneficiaryResponse beneficiaryResponse = beneficiaryService.createBeneficiary(createBeneficiaryRequest);
+        MerchantResponse merchantResponse = merchantService.createMerchant(createMerchantRequest);
 
-        URI location = URI.create("/api/v1/beneficiaries"+beneficiaryResponse.id());
+        URI location = URI.create("/api/v1/merchants"+merchantResponse.id());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(location)
                 .body(
                         new ApiResponse<>(
                                 true,
-                                beneficiaryResponse,
+                                merchantResponse,
                                 HttpStatus.CREATED.value(),
                                 Instant.now()
                         )
@@ -84,19 +84,19 @@ public class BeneficiaryController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
-    @PatchMapping("/{beneficiaryId}")
-    public ResponseEntity<ApiResponse<BeneficiaryResponse>> update(
-            @PathVariable String beneficiaryId,
+    @PatchMapping("/{merchantId}")
+    public ResponseEntity<ApiResponse<MerchantResponse>> update(
+            @PathVariable String merchantId,
             @RequestBody
             @Valid
-            UpdateBeneficiaryRequest updateBeneficiaryRequest
+            UpdateMerchantRequest updateMerchantRequest
     ) {
-        BeneficiaryResponse beneficiaryResponse = beneficiaryService.updateBeneficiary(beneficiaryId, updateBeneficiaryRequest);
+        MerchantResponse merchantResponse = merchantService.updateMerchant(merchantId, updateMerchantRequest);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
                         true,
-                        beneficiaryResponse,
+                        merchantResponse,
                         HttpStatus.OK.value(),
                         Instant.now()
                 )
@@ -104,15 +104,15 @@ public class BeneficiaryController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
-    @DeleteMapping("/{beneficiaryId}")
+    @DeleteMapping("/{merchantId}")
     public ResponseEntity<ApiResponse<ApiMessage>> delete(
-            @PathVariable String beneficiaryId
+            @PathVariable String merchantId
     ) {
-        beneficiaryService.deleteBeneficiary(beneficiaryId);
+        merchantService.deleteMerchant(merchantId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
                         true,
-                        new ApiMessage("Beneficiary with id: "+beneficiaryId+" has been deleted"),
+                        new ApiMessage("Merchant with id: "+merchantId+" has been deleted"),
                         HttpStatus.OK.value(),
                         Instant.now()
                 )

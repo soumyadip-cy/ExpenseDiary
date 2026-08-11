@@ -43,7 +43,9 @@ public class MerchantService {
         return merchantResponse;
     }
 
-    public Page<MerchantResponse> findAll(int page, int pageSize, String sortBy, boolean sortByDescendingOrder) {
+    public Page<MerchantResponse> findAll(int page, int pageSize, String sortBy, String sort) {
+
+        boolean sortByDescendingOrder = sort.equalsIgnoreCase("desc");
 
         Page<MerchantResponse> merchantResponses = merchantRepository.findAll(pageableUtil.createPageable(page, pageSize, sortBy, sortByDescendingOrder, Merchant.class))
                 .map(merchantMapper::toResponse);
