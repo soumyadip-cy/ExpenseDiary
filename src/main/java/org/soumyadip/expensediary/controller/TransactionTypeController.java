@@ -18,7 +18,7 @@ import java.time.Instant;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/transaction-type")
+@RequestMapping("/api/v1/transaction-types")
 public class TransactionTypeController {
 
     private final TransactionTypeService transactionTypeService;

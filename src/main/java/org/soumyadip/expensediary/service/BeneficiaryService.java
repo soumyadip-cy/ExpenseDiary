@@ -6,13 +6,18 @@ import org.soumyadip.expensediary.dto.BeneficiaryResponse;
 import org.soumyadip.expensediary.dto.CreateBeneficiaryRequest;
 import org.soumyadip.expensediary.dto.UpdateBeneficiaryRequest;
 import org.soumyadip.expensediary.entity.Beneficiary;
+import org.soumyadip.expensediary.entity.Merchant;
+import org.soumyadip.expensediary.exception.BeneficiaryAlreadyExists;
 import org.soumyadip.expensediary.exception.BeneficiaryNotFoundException;
+import org.soumyadip.expensediary.exception.MerchantAlreadyExists;
 import org.soumyadip.expensediary.mapper.BeneficiaryMapper;
 import org.soumyadip.expensediary.repository.BeneficiaryRepository;
 import org.soumyadip.expensediary.util.PageableUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 
 
 @Slf4j
@@ -62,6 +67,11 @@ public class BeneficiaryService {
 
         Beneficiary beneficiary = beneficiaryMapper.toEntity(createBeneficiaryRequest);
         beneficiary.setId(ulidGenerator.generate());
+        beneficiary.setActive(true);
+        beneficiary.setActivationTime(Instant.now());
+        if(beneficiaryRepository.findByName(beneficiary.getName()).isPresent()) {
+            throw new BeneficiaryAlreadyExists("Beneficiary with name: " + beneficiary.getName() + " already exists!", beneficiary.getId());
+        }
         log.debug("Beneficiary object created with id {}", beneficiary.getId());
         beneficiaryRepository.save(beneficiary);
         log.debug("Beneficiary saved with id {}", beneficiary.getId());
@@ -79,6 +89,15 @@ public class BeneficiaryService {
         log.info("Beneficiary updated with id {}", id);
 
         return beneficiaryMapper.toResponse(beneficiary);
+    }
+
+    @Transactional
+    public void deactivateBeneficiary(String id) {
+
+        Beneficiary beneficiary = getBeneficiary(id);
+        beneficiary.setActive(false);
+        beneficiary.setDeactivationTime(Instant.now());
+        log.info("Beneficiary deactivated with id {}", id);
     }
 
     @Transactional

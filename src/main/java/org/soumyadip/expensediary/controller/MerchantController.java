@@ -104,6 +104,22 @@ public class MerchantController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
+    @DeleteMapping("/deactivate/{merchantId}")
+    public ResponseEntity<ApiResponse<ApiMessage>> deactivate(
+            @PathVariable String merchantId
+    ) {
+        merchantService.deactivateMerchant(merchantId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ApiResponse<>(
+                        true,
+                        new ApiMessage("Merchant with id: "+merchantId+" has been deactivated."),
+                        HttpStatus.OK.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
     @DeleteMapping("/{merchantId}")
     public ResponseEntity<ApiResponse<ApiMessage>> delete(
             @PathVariable String merchantId

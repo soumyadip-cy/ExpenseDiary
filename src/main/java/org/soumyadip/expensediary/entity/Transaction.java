@@ -19,7 +19,7 @@ public class Transaction {
     @Id
     private String id;
 
-    @NotBlank
+    @NotNull
     @Column(nullable = false)
     private Instant transactionTime;
 

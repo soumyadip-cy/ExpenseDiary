@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record UpdateMerchantRequest(
-        @NotBlank(message = "Name is required") String name,
+        String name,
         String description,
         String address,
         String phone,

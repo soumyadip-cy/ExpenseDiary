@@ -18,6 +18,7 @@ public interface TransactionTypeMapper {
 
     @Mapping(target = "id", ignore = true)
     TransactionType toEntity(CreateTransactionTypeRequest createTransactionTypeRequest);
+
     TransactionTypeResponse toResponse(TransactionType transactionType);
 
     void updateEntity(

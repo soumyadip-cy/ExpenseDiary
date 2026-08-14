@@ -3,7 +3,9 @@ package org.soumyadip.expensediary.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.soumyadip.expensediary.dto.*;
+import org.soumyadip.expensediary.entity.Beneficiary;
 import org.soumyadip.expensediary.entity.Merchant;
+import org.soumyadip.expensediary.exception.MerchantAlreadyExists;
 import org.soumyadip.expensediary.exception.MerchantNotFoundException;
 import org.soumyadip.expensediary.mapper.MerchantMapper;
 import org.soumyadip.expensediary.repository.MerchantRepository;
@@ -11,6 +13,8 @@ import org.soumyadip.expensediary.util.PageableUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 
 
 @Slf4j
@@ -36,9 +40,11 @@ public class MerchantService {
                 () -> new MerchantNotFoundException("Couldn't find merchant with the id", id)
         );
         log.info("Merchant found with id {}", id);
+        log.info("Merchant active: {}", merchant.isActive());
 
         MerchantResponse merchantResponse = merchantMapper.toResponse(merchant);
-        log.debug("Merchant found with id {}", merchant.getId());
+        log.debug("Merchant response DTO created with id: {}", merchantResponse.id());
+        log.debug("Merchant response DTO isActive: {}", merchantResponse.isActive());
 
         return merchantResponse;
     }
@@ -59,6 +65,12 @@ public class MerchantService {
 
         Merchant merchant = merchantMapper.toEntity(createMerchantRequest);
         merchant.setId(ulidGenerator.generate());
+        merchant.setActive(true);
+        merchant.setActivationTime(Instant.now());
+        if(merchantRepository.findByName(merchant.getName()).isPresent()) {
+            throw new MerchantAlreadyExists("Merchant with name: " + merchant.getName() + " already exists!", merchant.getId());
+        }
+        log.info(merchant.toString());
         log.debug("Merchant object created with id {}", merchant.getId());
         merchantRepository.save(merchant);
         log.debug("Merchant saved with id {}", merchant.getId());
@@ -76,6 +88,15 @@ public class MerchantService {
         log.info("Merchant updated with id {}", id);
 
         return merchantMapper.toResponse(merchant);
+    }
+
+    @Transactional
+    public void deactivateMerchant(String id) {
+
+        Merchant merchant = getMerchant(id);
+        merchant.setActive(false);
+        merchant.setDeactivationTime(Instant.now());
+        log.info("Merchant deactivated with id {}", id);
     }
 
     @Transactional

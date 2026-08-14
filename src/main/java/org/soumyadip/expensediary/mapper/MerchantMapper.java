@@ -22,6 +22,7 @@ public interface MerchantMapper {
     @Mapping(target = "deactivationTime", ignore = true)
     Merchant toEntity(CreateMerchantRequest request);
 
+    @Mapping(target = "isActive", source = "active")
     MerchantResponse toResponse(Merchant merchant);
 
     void updateEntity(

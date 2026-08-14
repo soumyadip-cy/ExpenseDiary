@@ -78,7 +78,6 @@ public class TransactionService {
         transaction.setTransactionType(transactionType);
 
         log.debug("Transaction object created with id {}", transaction.getId());
-
         transactionRepository.save(transaction);
         log.debug("Transaction saved with id {}", transaction.getId());
         TransactionResponse transactionResponse = transactionMapper.toResponse(transaction);

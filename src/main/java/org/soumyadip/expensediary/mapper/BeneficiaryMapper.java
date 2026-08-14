@@ -20,6 +20,7 @@ public interface BeneficiaryMapper {
     @Mapping(target = "deactivationTime", ignore = true)
     Beneficiary toEntity(CreateBeneficiaryRequest request);
 
+    @Mapping(target = "isActive", source = "active")
     BeneficiaryResponse toResponse(Beneficiary beneficiary);
 
     void updateEntity(

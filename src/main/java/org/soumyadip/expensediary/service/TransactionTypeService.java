@@ -6,6 +6,7 @@ import org.soumyadip.expensediary.dto.CreateTransactionTypeRequest;
 import org.soumyadip.expensediary.dto.TransactionTypeResponse;
 import org.soumyadip.expensediary.dto.UpdateTransactionTypeRequest;
 import org.soumyadip.expensediary.entity.TransactionType;
+import org.soumyadip.expensediary.exception.MerchantAlreadyExists;
 import org.soumyadip.expensediary.exception.TransactionTypeNotFoundException;
 import org.soumyadip.expensediary.mapper.TransactionTypeMapper;
 import org.soumyadip.expensediary.repository.TransactionTypeRepository;
@@ -37,6 +38,9 @@ public class TransactionTypeService {
 
         TransactionType transactionType = mapper.toEntity(typeRequest);
         transactionType.setId(ulidGenerator.generate());
+        if(repository.findByName(transactionType.getName()).isPresent()) {
+            throw new MerchantAlreadyExists("Transaction Type with name: " + transactionType.getName() + " already exists!", transactionType.getId());
+        }
         log.debug("TransactionType creating with id: {}", transactionType.getId());
         repository.save(transactionType);
         log.info("TransactionType created with id: {}", transactionType.getId());

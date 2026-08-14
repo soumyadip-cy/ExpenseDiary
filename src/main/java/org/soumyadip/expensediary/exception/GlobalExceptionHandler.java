@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -126,11 +127,48 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TransactionNotFoundException.class)
-    public ResponseEntity<String> handleTransactionNotFoundException(
+    public ResponseEntity<ApiResponse<ApiMessage>> handleTransactionNotFoundException(
             TransactionNotFoundException e
     ) {
-        log.error("Transaction not found! | Error message: "+e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transaction not found!");
+        log.error("Transaction with id: {} not found! | Error message: {}",e.getId(),e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ApiResponse<>(
+                        false,
+                        new ApiMessage("Transaction not found!"),
+                        HttpStatus.NOT_FOUND.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(MerchantNotFoundException.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleMerchantNotFoundException(
+            MerchantNotFoundException e
+    ) {
+        log.error("Merchant with id: {} not found! | Error message: {}",e.getId(),e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ApiResponse<>(
+                        false,
+                        new ApiMessage("Merchant not found!"),
+                        HttpStatus.NOT_FOUND.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(BeneficiaryNotFoundException.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleBeneficiaryNotFoundException(
+            BeneficiaryNotFoundException e
+    ) {
+        log.error("Beneficiary with id: {} not found! | Error message: {}",e.getId(),e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ApiResponse<>(
+                        false,
+                        new ApiMessage("Beneficiary not found!"),
+                        HttpStatus.NOT_FOUND.value(),
+                        Instant.now()
+                )
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -166,7 +204,7 @@ public class GlobalExceptionHandler {
             HttpRequestMethodNotSupportedException e,
             HttpServletRequest request
     ) {
-        String supportedMethods = e.getSupportedMethods() == null ? "null" : e.getSupportedMethods().toString();
+        String supportedMethods = e.getSupportedMethods() == null ? "null" : Arrays.toString(e.getSupportedMethods());
         log.error(
                 "Method not supported! | Error message: {} | Method: {} | Path: {} | SupportedMethods: {}",
                 e.getMessage(),
@@ -197,6 +235,57 @@ public class GlobalExceptionHandler {
                 new ApiResponse<>(
                         false,
                         new ApiMessage("This user is not permitted to perform this operation!"),
+                        HttpStatus.FORBIDDEN.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(MerchantAlreadyExists.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleMerchantAlreadyExists(
+            MerchantAlreadyExists e,
+            HttpServletRequest request
+    ) {
+        log.error("User tried creating duplicate merchant ! | Error message: {}",e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ApiResponse<>(
+                        false,
+                        new ApiMessage("Merchant already exists!"),
+                        HttpStatus.FORBIDDEN.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(BeneficiaryAlreadyExists.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleBeneficiaryAlreadyExists(
+            BeneficiaryAlreadyExists e,
+            HttpServletRequest request
+    ) {
+        log.error("User tried creating duplicate beneficiary ! | Error message: {}",e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ApiResponse<>(
+                        false,
+                        new ApiMessage("Beneficiary already exists!"),
+                        HttpStatus.FORBIDDEN.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(TransactionTypeAlreadyExists.class)
+    public ResponseEntity<ApiResponse<ApiMessage>> handleTransactionTypeAlreadyExists(
+            TransactionTypeAlreadyExists e,
+            HttpServletRequest request
+    ) {
+        log.error("User tried creating duplicate transaction type ! | Error message: {}",e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ApiResponse<>(
+                        false,
+                        new ApiMessage("Transaction type already exists!"),
                         HttpStatus.FORBIDDEN.value(),
                         Instant.now()
                 )

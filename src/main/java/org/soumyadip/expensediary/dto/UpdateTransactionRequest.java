@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 public record UpdateTransactionRequest(
-        @NotBlank Instant transactionTime,
-        @NotNull String transactionTypeId,
-        @NotNull String beneficiaryId,
-        @NotNull String merchantId,
-        @NotBlank String title,
+        Instant transactionTime,
+        String transactionTypeId,
+        String beneficiaryId,
+        String merchantId,
+        String title,
         String description,
-        @NotNull BigDecimal amount
+        BigDecimal amount
 ) {}

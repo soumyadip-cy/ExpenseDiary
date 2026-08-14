@@ -23,6 +23,12 @@ public interface TransactionMapper {
     @Mapping(target = "merchant", ignore = true)
     Transaction toEntity(CreateTransactionRequest request);
 
+    @Mapping(target = "transactionTypeName", source = "transactionType.name")
+    @Mapping(target = "transactionTypeId", source = "transactionType.id")
+    @Mapping(target = "beneficiaryName", source = "beneficiary.name")
+    @Mapping(target = "beneficiaryId", source = "beneficiary.id")
+    @Mapping(target = "merchantName", source = "merchant.name")
+    @Mapping(target = "merchantId", source = "merchant.id")
     TransactionResponse toResponse(Transaction transaction);
 
     void updateEntity(

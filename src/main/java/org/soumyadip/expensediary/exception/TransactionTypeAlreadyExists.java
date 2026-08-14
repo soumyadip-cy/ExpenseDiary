@@ -3,11 +3,11 @@ package org.soumyadip.expensediary.exception;
 import lombok.Getter;
 
 @Getter
-public class TransactionTypeNotFoundException extends RuntimeException {
+public class TransactionTypeAlreadyExists extends RuntimeException {
 
     private final String id;
 
-    public TransactionTypeNotFoundException(String message, String transactionId) {
+    public TransactionTypeAlreadyExists(String message, String transactionId) {
         super(message);
         this.id = transactionId;
     }

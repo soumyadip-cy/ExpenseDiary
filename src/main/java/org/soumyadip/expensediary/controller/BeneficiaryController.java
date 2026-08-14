@@ -104,6 +104,22 @@ public class BeneficiaryController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
+    @DeleteMapping("/deactivate/{beneficiaryId}")
+    public ResponseEntity<ApiResponse<ApiMessage>> deactivate(
+            @PathVariable String beneficiaryId
+    ) {
+        beneficiaryService.deactivateBeneficiary(beneficiaryId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ApiResponse<>(
+                        true,
+                        new ApiMessage("Beneficiary with id: "+beneficiaryId+" has been deactivated."),
+                        HttpStatus.OK.value(),
+                        Instant.now()
+                )
+        );
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
     @DeleteMapping("/{beneficiaryId}")
     public ResponseEntity<ApiResponse<ApiMessage>> delete(
             @PathVariable String beneficiaryId
