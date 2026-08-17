@@ -32,13 +32,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(true,
                         userService.getUser(userDetails.getUsername()),
-                        200, Instant.now())
+                        HttpStatus.OK.value(),
+                        Instant.now())
         );
     }
 
     @GetMapping("/access-times")
     public ResponseEntity<ApiResponse<AccessTimes>> getAccessTimes() {
-        return ResponseEntity.ok(new ApiResponse<>(true, userService.getAccessTimes(), 200, Instant.now()));
+        return ResponseEntity.ok(new ApiResponse<>(true, userService.getAccessTimes(), HttpStatus.OK.value(), Instant.now()));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','SUPERADMIN')")
@@ -52,7 +53,7 @@ public class UserController {
         easyUserCreationService.createRegularUser(createUserRequest.username(), createUserRequest.password());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new ApiResponse<>(true, new ApiMessage("User created successfully!"), 201, Instant.now())
+                new ApiResponse<>(true, new ApiMessage("User created successfully!"), HttpStatus.CREATED.value(), Instant.now())
         );
 
     }
@@ -68,7 +69,7 @@ public class UserController {
         easyUserCreationService.createAdminUser(createUserRequest.username(), createUserRequest.password());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new ApiResponse<>(true, new ApiMessage("User created successfully!"), 201, Instant.now())
+                new ApiResponse<>(true, new ApiMessage("User created successfully!"), HttpStatus.CREATED.value(), Instant.now())
         );
 
     }
@@ -82,7 +83,7 @@ public class UserController {
     ) {
         userService.editUsername(userDetails.getUsername(), changeUsername.username());
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ApiResponse<>(true, new ApiMessage("User successfully changed!"), 200, Instant.now())
+                new ApiResponse<>(true, new ApiMessage("User successfully changed!"), HttpStatus.OK.value(), Instant.now())
         );
     }
 
@@ -97,7 +98,7 @@ public class UserController {
         userService.changePassword(userDetails.getUsername(), changePasswordRequest.oldPassword(), changePasswordRequest.newPassword());
 
         return ResponseEntity.ok(
-                new ApiResponse<>(true, new ApiMessage("Password changed successfully!"), 200, Instant.now())
+                new ApiResponse<>(true, new ApiMessage("Password changed successfully!"), HttpStatus.OK.value(), Instant.now())
         );
     }
 
@@ -110,8 +111,8 @@ public class UserController {
 
         userService.deleteUser(userDetails.getUsername(), id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ApiResponse<>(true, new ApiMessage("User deleted successfully!"), 200, Instant.now())
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(
+                new ApiResponse<>(true, new ApiMessage("User deleted successfully!"), HttpStatus.NO_CONTENT.value(), Instant.now())
         );
     }
 }
