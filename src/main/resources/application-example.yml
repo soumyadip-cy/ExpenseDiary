@@ -17,17 +17,20 @@ spring:
     password: <db_username_password>
     devtools:
       restart:
-        enabled: true
+        enabled: false
 
 jwt:
   secret: <Random JWT secret>
 
+frontend:
+  url: http://localhost:5173
+
 logging:
   level:
-    root: DEBUG
+    root: INFO
     org.springframework.security: INFO
 
 server:
-  port: 8086
+  port: 8085
 
 secure-cookie-pref: false
